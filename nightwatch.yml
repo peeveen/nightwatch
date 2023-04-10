@@ -1,4 +1,5 @@
 path: /mnt/hdd/Media/Security
 seconds: 5
-byteDiffThreshold: 6144
+byteDiffThreshold: 8192
+resolution: 1080p
 imageLifespanDays: 14

@@ -21,14 +21,15 @@ config_path="./nightwatch.yml"
 config = yaml.safe_load(open(config_path))
 path = config["path"]
 seconds = int(config["seconds"])
+resolution = config["resolution"]
 imageLifespanDays = int(config["imageLifespanDays"])
 byteDiffThreshold = int(config["byteDiffThreshold"])
-print(f"Saving files to {path} every {seconds} seconds.")
+print(f"Saving images of {resolution} resolution to {path} every {seconds} seconds.")
 print(f"Files that do not differ in size from the previous one by at least {byteDiffThreshold} bytes will be discarded.")
 print(f"Images will be kept for {imageLifespanDays} days")
 camera = PiCamera()
 camera.rotation=180
-camera.resolution="1080p"
+camera.resolution=resolution
 previousImageSize = 0
 while(True):
 	now = datetime.datetime.now()
