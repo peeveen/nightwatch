@@ -1,0 +1,26 @@
+version: "3.8"
+
+# On Pi, create or edit /etc/udev/rules.d/99-camera.rules
+# It must contain this line to allow Docker to access the camera.
+#
+# SUBSYSTEM=="vchiq",MODE="0666"
+#
+services:
+  nightwatch:
+    environment:
+      - LD_LIBRARY_PATH=/opt/vc/lib
+        # How often to take a photo.
+      - ENV FREQUENCY_SECONDS=5
+        # Discard images with a file size that is within this number of bytes of the previous image.
+      - ENV BYTE_DIFFERENCE_THRESHOLD=8192
+        # Resolution of image.
+      - ENV RESOLUTION=1080p
+        # How long to keep images.
+      - ENV IMAGE_LIFESPAN_DAYS=14
+    image: peeveen/nightwatch
+    devices:
+      - /dev/vchiq
+    volumes:
+      - /opt/vc:/opt/vc
+      # Folder where images will go
+      - /mnt/hdd/Security:/images

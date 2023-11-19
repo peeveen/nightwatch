@@ -1,8 +1,9 @@
-import yaml
-from picamera import PiCamera
-import time
 import datetime
 import os
+import time
+
+from picamera import PiCamera
+
 
 def cleanup(now, path,imageLifespanDays):
 	for (root,dirs,files) in os.walk(path, topdown=False):
@@ -17,13 +18,12 @@ def cleanup(now, path,imageLifespanDays):
 			if(difference.days>imageLifespanDays):
 				os.remove(fullPath)
 
-config_path="./nightwatch.yml"
-config = yaml.safe_load(open(config_path))
-path = config["path"]
-seconds = int(config["seconds"])
-resolution = config["resolution"]
-imageLifespanDays = int(config["imageLifespanDays"])
-byteDiffThreshold = int(config["byteDiffThreshold"])
+path = os.environ("OUTPUT_PATH")
+seconds = int(os.environ("FREQUENCY_SECONDS"))
+resolution = os.environ("RESOLUTION")
+imageLifespanDays = int(os.environ("IMAGE_LIFESPAN_DAYS"))
+byteDiffThreshold = int(os.environ("BYTE_DIFFERENCE_THRESHOLD"))
+
 print(f"Saving images of {resolution} resolution to {path} every {seconds} seconds.")
 print(f"Files that do not differ in size from the previous one by at least {byteDiffThreshold} bytes will be discarded.")
 print(f"Images will be kept for {imageLifespanDays} days")
