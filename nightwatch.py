@@ -18,7 +18,7 @@ def cleanup(now, path,imageLifespanDays):
 			if(difference.days>imageLifespanDays):
 				os.remove(fullPath)
 
-path = os.environ.get("OUTPUT_PATH")
+path="/images"
 seconds = int(os.environ.get("FREQUENCY_SECONDS"))
 resolution = os.environ.get("RESOLUTION")
 imageLifespanDays = int(os.environ.get("IMAGE_LIFESPAN_DAYS"))
