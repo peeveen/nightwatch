@@ -2,8 +2,8 @@ import datetime
 import os
 import time
 
-from picamera import PiCamera
-
+from picamera2 import Picamera2
+from libcamera import Transform
 
 def cleanup(now, path,imageLifespanDays):
 	for (root,dirs,files) in os.walk(path, topdown=False):
@@ -27,9 +27,10 @@ byteDiffThreshold = int(os.environ.get("BYTE_DIFFERENCE_THRESHOLD"))
 print(f"Saving images of {resolution} resolution to {path} every {seconds} seconds.")
 print(f"Files that do not differ in size from the previous one by at least {byteDiffThreshold} bytes will be discarded.")
 print(f"Images will be kept for {imageLifespanDays} days")
-camera = PiCamera()
-camera.rotation=180
-camera.resolution=resolution
+camera = Picamera2()
+camera_config = camera.create_still_configuration(main={"size": (1920,1080)}, transform=Transform(hflip=1, vflip=1), display="main")
+camera.configure(camera_config)
+camera.start()
 previousImageSize = 0
 while(True):
 	now = datetime.datetime.now()
@@ -41,7 +42,7 @@ while(True):
 		os.mkdir(folderPath)
 	imagePath = os.path.join(folderPath, filename)
 	print(f"Writing to {imagePath} ...")
-	camera.capture(imagePath)
+	camera.capture_file(imagePath)
 	currentImageSize = os.path.getsize(imagePath)
 	if(abs(previousImageSize-currentImageSize)< byteDiffThreshold):
 		print("Current image not sufficiently different; discarding.")
@@ -50,3 +51,4 @@ while(True):
 		previousImageSize = currentImageSize
 	print("Waiting ...")
 	time.sleep(seconds)
+camera.stop()
