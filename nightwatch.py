@@ -18,11 +18,11 @@ def cleanup(now, path,imageLifespanDays):
 			if(difference.days>imageLifespanDays):
 				os.remove(fullPath)
 
-path = os.environ("OUTPUT_PATH")
-seconds = int(os.environ("FREQUENCY_SECONDS"))
-resolution = os.environ("RESOLUTION")
-imageLifespanDays = int(os.environ("IMAGE_LIFESPAN_DAYS"))
-byteDiffThreshold = int(os.environ("BYTE_DIFFERENCE_THRESHOLD"))
+path = os.environ.get("OUTPUT_PATH")
+seconds = int(os.environ.get("FREQUENCY_SECONDS"))
+resolution = os.environ.get("RESOLUTION")
+imageLifespanDays = int(os.environ.get("IMAGE_LIFESPAN_DAYS"))
+byteDiffThreshold = int(os.environ.get("BYTE_DIFFERENCE_THRESHOLD"))
 
 print(f"Saving images of {resolution} resolution to {path} every {seconds} seconds.")
 print(f"Files that do not differ in size from the previous one by at least {byteDiffThreshold} bytes will be discarded.")
