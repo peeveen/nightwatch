@@ -14,7 +14,11 @@ services:
         # Discard images with a file size that is within this number of bytes of the previous image.
       - ENV BYTE_DIFFERENCE_THRESHOLD=8192
         # Resolution of image.
-      - ENV RESOLUTION=1080p
+      - ENV RESOLUTION_X=1920
+      - ENV RESOLUTION_Y=1080
+        # Flip? 0 for no, 1 for yes.
+      - ENV FLIP_X=1
+      - ENV FLIP_Y=1
         # How long to keep images.
       - ENV IMAGE_LIFESPAN_DAYS=14
     image: peeveen/nightwatch
