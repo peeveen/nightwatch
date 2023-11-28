@@ -41,10 +41,15 @@ signal.signal(signal.SIGTERM, stopApp)
 print(f"Saving images of {resolution_x}x{resolution_y} resolution to {path} every {seconds} seconds.")
 print(f"Files that do not differ in size from the previous one by at least {byteDiffThreshold} bytes will be discarded.")
 print(f"Images will be kept for {imageLifespanDays} days")
+print(f"Creating camera object ...")
 camera = Picamera2()
+print(f"Creating camera configuration ...")
 camera_config = camera.create_still_configuration(main={"size": (resolution_x,resolution_y)}, transform=Transform(hflip=flip_x, vflip=flip_y), display="main")
+print(f"Applying camera configuration ...")
 camera.configure(camera_config)
+print(f"Starting camera ...")
 camera.start()
+print(f"Started camera, running monitor loop.")
 previousImageSize = 0
 while(not stop):
 	now = datetime.datetime.now()
@@ -54,9 +59,11 @@ while(not stop):
 	if(not os.path.exists(folderPath)):
 		os.mkdir(folderPath)
 	imageBytes=io.BytesIO()
+	print(f"Capturing image ...")
 	image:Image = camera.capture_file(imageBytes,"main","jpeg")
 	buffer=imageBytes.getbuffer()
 	currentImageSize = buffer.nbytes
+	print(f"Captured JPEG is {currentImageSize} bytes")
 	if(abs(previousImageSize-currentImageSize)< byteDiffThreshold):
 		print("Current image not sufficiently different; discarding.")
 	else:
