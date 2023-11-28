@@ -22,7 +22,7 @@ def cleanup(now, path,imageLifespanDays):
 			if(difference.days>imageLifespanDays):
 				os.remove(fullPath)
 
-path="/images"
+path=os.environ.get("ROOT_SAVE_PATH")
 seconds = int(os.environ.get("FREQUENCY_SECONDS"))
 resolution_x = int(os.environ.get("RESOLUTION_X"))
 resolution_y = int(os.environ.get("RESOLUTION_Y"))
