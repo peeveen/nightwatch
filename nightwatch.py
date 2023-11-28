@@ -1,6 +1,7 @@
 import datetime
 import io
 import os
+import signal
 import time
 
 from libcamera import Transform
@@ -30,6 +31,13 @@ flip_y = int(os.environ.get("FLIP_Y"))
 imageLifespanDays = int(os.environ.get("IMAGE_LIFESPAN_DAYS"))
 byteDiffThreshold = int(os.environ.get("BYTE_DIFFERENCE_THRESHOLD"))
 
+stop=False
+def stop():
+	stop = True
+
+signal.signal(signal.SIGINT, stop)
+signal.signal(signal.SIGTERM, stop)
+
 print(f"Saving images of {resolution_x}x{resolution_y} resolution to {path} every {seconds} seconds.")
 print(f"Files that do not differ in size from the previous one by at least {byteDiffThreshold} bytes will be discarded.")
 print(f"Images will be kept for {imageLifespanDays} days")
@@ -38,7 +46,7 @@ camera_config = camera.create_still_configuration(main={"size": (resolution_x,re
 camera.configure(camera_config)
 camera.start()
 previousImageSize = 0
-while(True):
+while(not stop):
 	now = datetime.datetime.now()
 	cleanup(now, path, imageLifespanDays)
 	folder = f"{now.year}{str(now.month).zfill(2)}{str(now.day).zfill(2)}"
