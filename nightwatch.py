@@ -5,6 +5,7 @@ import time
 
 from libcamera import Transform
 from picamera2 import Picamera2
+from PIL import Image
 
 
 def cleanup(now, path,imageLifespanDays):
@@ -38,25 +39,25 @@ camera.configure(camera_config)
 camera.start()
 previousImageSize = 0
 while(True):
-	with io.BytesIO() as stream:
-		now = datetime.datetime.now()
-		cleanup(now, path, imageLifespanDays)
-		folder = f"{now.year}{str(now.month).zfill(2)}{str(now.day).zfill(2)}"
-		folderPath=os.path.join(path,folder)
-		if(not os.path.exists(folderPath)):
-			os.mkdir(folderPath)
-		camera.capture(stream, format="jpeg")
-		stream.seek(0)
-		currentImageSize = stream.getbuffer().nbytes
-		if(abs(previousImageSize-currentImageSize)< byteDiffThreshold):
-			print("Current image not sufficiently different; discarding.")
-		else:
-			filename = f"{str(now.hour).zfill(2)}{str(now.minute).zfill(2)}{str(now.second).zfill(2)}.jpg" 
-			imagePath = os.path.join(folderPath, filename)
-			print(f"Writing to {imagePath} ...")
-			with open(imagePath, "wb") as f:
-				f.write(stream.getbuffer())
-			previousImageSize = currentImageSize
+	now = datetime.datetime.now()
+	cleanup(now, path, imageLifespanDays)
+	folder = f"{now.year}{str(now.month).zfill(2)}{str(now.day).zfill(2)}"
+	folderPath=os.path.join(path,folder)
+	if(not os.path.exists(folderPath)):
+		os.mkdir(folderPath)
+	imageBytes=io.BytesIO()
+	image:Image = camera.capture_file(imageBytes,"main","jpeg")
+	buffer=imageBytes.getbuffer()
+	currentImageSize = buffer.nbytes
+	if(abs(previousImageSize-currentImageSize)< byteDiffThreshold):
+		print("Current image not sufficiently different; discarding.")
+	else:
+		filename = f"{str(now.hour).zfill(2)}{str(now.minute).zfill(2)}{str(now.second).zfill(2)}.jpg" 
+		imagePath = os.path.join(folderPath, filename)
+		print(f"Writing image buffer to {imagePath} ...")
+		with open(imagePath, "wb") as f:
+			f.write(buffer)
+		previousImageSize = currentImageSize
 	print("Waiting ...")
 	time.sleep(seconds)
 camera.stop()
